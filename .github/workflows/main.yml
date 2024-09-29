@@ -24,35 +24,43 @@ jobs:
 
     - name: Build with Gradle
       run: |
+        # 리눅스에서 만들때는 안만들어 지므로 직접 셋팅해줌 
         chmod +x ./gradlew
         ./gradlew build
 
     - name: Set SSH key permissions
       run: |
+        #-p:부모폴더가 없어도 만듬 
         mkdir -p ~/.ssh
+        #환경설정변수 ${{}} : 개인키등록을 하면 안보임(로그로 뜨지 않도록 한다) 
         echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
+        #600은 읽고 쓰기 권한 
         chmod 600 ~/.ssh/id_rsa
 
+    #Action 이용한다. 
     - name: Add SSH key
       uses: webfactory/ssh-agent@v0.5.3
+      #개인키 
       with:
         ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
 
     - name: Add known_hosts
       run: |
-        ssh-keyscan -t ed25519 3.38.246.215 >> ~/.ssh/known_hosts
+        #ed25519 : 프로토콜, 운영서버의 IP: 3.35.166.162
+        ssh-keyscan -t ed25519 3.35.166.162 >> ~/.ssh/known_hosts
 
     #- name: 기존프로세스 종료 
     #  run: |
+    #   이름을 다 주면 해당 파일만 종료한다. 
     #    kill -9 $(ps -ef | grep devops | grep -v grep | head -n 1 | awk '{print $2}') || true
 
     - name: Deploy to Server
-      run: scp build/libs/*.jar ubuntu@3.38.246.215:~/
+      run: scp build/libs/*.jar ubuntu@3.35.166.162:~/
 
 
     - name: Run SSH commands
       run: |
-        ssh -i ~/.ssh/id_rsa ubuntu@3.38.246.215 << 'EOF'
+        ssh -i ~/.ssh/id_rsa ubuntu@3.35.166.162 << 'EOF'
           pkill -f 'java -jar' || true
-          nohup java -jar ~/devops_step0-0.0.1-SNAPSHOT.jar > log.txt 2>&1 &
+          nohup java -jar ~/koreatech-0.0.1-SNAPSHOT.jar > log.txt 2>&1 &
         EOF
