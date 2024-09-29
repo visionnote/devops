@@ -23,7 +23,7 @@ class KoreatechApplicationTests {
 	@Test 
 	void addTest1() { 
 		int result = add(10, 20);
-		assertEquals(10, result);
+		assertEquals(30, result);
 
 	}
 
