@@ -30,7 +30,6 @@ jobs:
 
     - name: Set SSH key permissions
       run: |
-        # -p:부모폴더가 없어도 만듬 
         mkdir -p ~/.ssh
         # 환경설정변수 ${{}} : 개인키등록을 하면 안보임(로그로 뜨지 않도록 한다) 
         echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
